@@ -1,3 +1,5 @@
+'use client';
+
 import type { InnovationProject } from '../../types/portfolio-types';
 import { EmptyState } from '../common/EmptyState';
 import { ProjectCard } from './ProjectCard';
@@ -10,12 +12,7 @@ interface ProjectGridProps {
 
 export function ProjectGrid({ projects, selectedId, onSelect }: ProjectGridProps) {
   if (projects.length === 0) {
-    return (
-      <EmptyState
-        title="No initiatives match the current filters."
-        description="Try clearing a filter or searching for an owner, technology or project name."
-      />
-    );
+    return <EmptyState />;
   }
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">

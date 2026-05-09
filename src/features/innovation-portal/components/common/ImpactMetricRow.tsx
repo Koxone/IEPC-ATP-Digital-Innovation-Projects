@@ -1,4 +1,7 @@
+'use client';
+
 import { ImpactUnit } from '../../enums/portfolio-enums';
+import { useT } from '../../i18n/I18nProvider';
 import type { ImpactMetric } from '../../types/portfolio-types';
 import { formatImpactValue } from '../../utils/impact-utils';
 
@@ -7,6 +10,7 @@ interface ImpactMetricRowProps {
 }
 
 export function ImpactMetricRow({ metric }: ImpactMetricRowProps) {
+  const t = useT();
   const accent = ACCENT_BY_UNIT[metric.unit];
   return (
     <div className="surface-card flex items-start gap-3 p-3">
@@ -16,7 +20,7 @@ export function ImpactMetricRow({ metric }: ImpactMetricRowProps) {
           {metric.label}
         </p>
         <p className="text-base font-semibold text-white tabular-nums">
-          {formatImpactValue(metric)}
+          {formatImpactValue(metric, t)}
         </p>
         {metric.detail ? (
           <p className="mt-1 text-xs text-ford-text-muted">{metric.detail}</p>

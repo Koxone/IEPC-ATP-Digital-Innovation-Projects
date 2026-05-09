@@ -1,12 +1,15 @@
 'use client';
 
 import { CalendarRange, ChevronRight } from 'lucide-react';
-import {
-  MILESTONE_STATUS_LABELS,
-  MilestoneStatus,
-} from '../../enums/portfolio-enums';
+import { MilestoneStatus } from '../../enums/portfolio-enums';
+import { useI18n } from '../../i18n/I18nProvider';
 import type { InnovationProject, Milestone } from '../../types/portfolio-types';
-import { formatDate, getDaysUntilDate, relativeDateLabel } from '../../utils/date-utils';
+import {
+  formatDate,
+  formatLongMonth,
+  getDaysUntilDate,
+  relativeDateLabel,
+} from '../../utils/date-utils';
 import { MILESTONE_PALETTE } from '../../utils/style-palettes';
 
 interface PortfolioRoadmapProps {
@@ -20,6 +23,7 @@ interface RoadmapEntry {
 }
 
 export function PortfolioRoadmap({ projects, onSelectProject }: PortfolioRoadmapProps) {
+  const { locale, t } = useI18n();
   const entries: RoadmapEntry[] = projects
     .flatMap((project) =>
       project.milestones
@@ -37,20 +41,17 @@ export function PortfolioRoadmap({ projects, onSelectProject }: PortfolioRoadmap
     return null;
   }
 
-  const grouped = groupByMonth(entries);
+  const grouped = groupByMonth(entries, locale);
 
   return (
     <section className="surface-card flex flex-col gap-5 p-5 sm:p-6">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-ford-text-dim uppercase">
           <CalendarRange className="h-3.5 w-3.5 text-ford-accent" aria-hidden />
-          Portfolio roadmap
+          {t.roadmap.eyebrow}
         </div>
-        <h3 className="text-lg font-semibold text-white">Upcoming milestones across IEPC</h3>
-        <p className="text-sm text-ford-text-muted">
-          Next 12 milestones from every active initiative, grouped by month. Click any milestone
-          to open the project.
-        </p>
+        <h3 className="text-lg font-semibold text-white">{t.roadmap.title}</h3>
+        <p className="text-sm text-ford-text-muted">{t.roadmap.description}</p>
       </div>
 
       <div className="flex flex-col gap-5">
@@ -72,7 +73,7 @@ export function PortfolioRoadmap({ projects, onSelectProject }: PortfolioRoadmap
                     key={`${project.id}-${milestone.id}`}
                     type="button"
                     onClick={() => onSelectProject(project.id)}
-                    className="group surface-card flex items-stretch gap-3 p-3 text-left transition hover:border-ford-border-strong"
+                    className="group surface-card flex cursor-pointer items-stretch gap-3 p-3 text-left transition hover:border-ford-border-strong"
                   >
                     <span
                       className={`w-1 shrink-0 rounded-full ${palette.accentBar}`}
@@ -86,7 +87,7 @@ export function PortfolioRoadmap({ projects, onSelectProject }: PortfolioRoadmap
                         <span
                           className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${palette.container}`}
                         >
-                          {MILESTONE_STATUS_LABELS[milestone.status]}
+                          {t.enums.milestoneStatus[milestone.status]}
                         </span>
                       </div>
                       <p className="text-sm font-semibold text-white">{milestone.title}</p>
@@ -95,9 +96,9 @@ export function PortfolioRoadmap({ projects, onSelectProject }: PortfolioRoadmap
                       </p>
                       <div className="mt-1 flex items-center justify-between text-[11px] text-ford-text-dim">
                         <span>
-                          {formatDate(milestone.targetDate)} ·{' '}
+                          {formatDate(milestone.targetDate, locale)} ·{' '}
                           <span className={isOverdue ? 'text-[#fda4af]' : 'text-ford-text-muted'}>
-                            {relativeDateLabel(milestone.targetDate)}
+                            {relativeDateLabel(milestone.targetDate, t, locale)}
                           </span>
                         </span>
                         <span className="inline-flex items-center gap-1 text-ford-accent">
@@ -122,11 +123,11 @@ export function PortfolioRoadmap({ projects, onSelectProject }: PortfolioRoadmap
 
 function groupByMonth(
   entries: RoadmapEntry[],
+  locale: ReturnType<typeof useI18n>['locale'],
 ): Array<{ month: string; items: RoadmapEntry[] }> {
-  const formatter = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
   const map = new Map<string, RoadmapEntry[]>();
   for (const entry of entries) {
-    const key = formatter.format(new Date(entry.milestone.targetDate));
+    const key = formatLongMonth(entry.milestone.targetDate, locale);
     const list = map.get(key) ?? [];
     list.push(entry);
     map.set(key, list);

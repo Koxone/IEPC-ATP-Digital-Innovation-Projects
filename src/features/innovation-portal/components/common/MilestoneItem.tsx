@@ -1,9 +1,9 @@
+'use client';
+
 import { AlertTriangle, CalendarClock, Check, Circle, CircleDot } from 'lucide-react';
 import type { ComponentType, SVGProps } from 'react';
-import {
-  MILESTONE_STATUS_LABELS,
-  MilestoneStatus,
-} from '../../enums/portfolio-enums';
+import { MilestoneStatus } from '../../enums/portfolio-enums';
+import { useI18n } from '../../i18n/I18nProvider';
 import type { Milestone } from '../../types/portfolio-types';
 import { formatDate, relativeDateLabel } from '../../utils/date-utils';
 import { MILESTONE_PALETTE } from '../../utils/style-palettes';
@@ -21,11 +21,15 @@ const ICONS: Record<MilestoneStatus, ComponentType<SVGProps<SVGSVGElement>>> = {
 };
 
 export function MilestoneItem({ milestone, isLast = false }: MilestoneItemProps) {
+  const { locale, t } = useI18n();
   const palette = MILESTONE_PALETTE[milestone.status];
   const Icon = ICONS[milestone.status];
   const dateLabel = milestone.completedDate
-    ? `Completed ${formatDate(milestone.completedDate)}`
-    : `Target ${formatDate(milestone.targetDate)} · ${relativeDateLabel(milestone.targetDate)}`;
+    ? t.milestones.completedOn(formatDate(milestone.completedDate, locale))
+    : t.milestones.targetOn(
+        formatDate(milestone.targetDate, locale),
+        relativeDateLabel(milestone.targetDate, t, locale),
+      );
 
   return (
     <li className="relative flex gap-3 pb-5 last:pb-0">
@@ -43,7 +47,7 @@ export function MilestoneItem({ milestone, isLast = false }: MilestoneItemProps)
           <span
             className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${palette.container}`}
           >
-            {MILESTONE_STATUS_LABELS[milestone.status]}
+            {t.enums.milestoneStatus[milestone.status]}
           </span>
         </div>
         <p className="text-xs text-ford-text-muted">{milestone.description}</p>

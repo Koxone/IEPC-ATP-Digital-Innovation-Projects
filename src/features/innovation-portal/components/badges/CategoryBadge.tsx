@@ -1,6 +1,9 @@
+'use client';
+
 import { Bot, Cog, Database, MonitorCog, Sparkles } from 'lucide-react';
 import type { ComponentType, SVGProps } from 'react';
-import { PROJECT_CATEGORY_LABELS, ProjectCategory } from '../../enums/portfolio-enums';
+import { ProjectCategory } from '../../enums/portfolio-enums';
+import { useT } from '../../i18n/I18nProvider';
 import { CATEGORY_PALETTE } from '../../utils/style-palettes';
 
 interface CategoryBadgeProps {
@@ -17,6 +20,7 @@ const CATEGORY_ICONS: Record<ProjectCategory, ComponentType<SVGProps<SVGSVGEleme
 };
 
 export function CategoryBadge({ category, size = 'sm' }: CategoryBadgeProps) {
+  const t = useT();
   const palette = CATEGORY_PALETTE[category];
   const Icon = CATEGORY_ICONS[category];
   const sizing =
@@ -29,7 +33,7 @@ export function CategoryBadge({ category, size = 'sm' }: CategoryBadgeProps) {
       className={`inline-flex items-center rounded-full border font-semibold tracking-wide uppercase ${palette.container} ${sizing}`}
     >
       <Icon className={`${iconSize} ${palette.iconColor}`} aria-hidden />
-      {PROJECT_CATEGORY_LABELS[category]}
+      {t.enums.projectCategory[category]}
     </span>
   );
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Activity,
   CheckCheck,
@@ -8,7 +10,8 @@ import {
   Workflow,
 } from 'lucide-react';
 import type { ComponentType, SVGProps } from 'react';
-import { PROJECT_STATUS_LABELS, ProjectStatus } from '../../enums/portfolio-enums';
+import { ProjectStatus } from '../../enums/portfolio-enums';
+import { useT } from '../../i18n/I18nProvider';
 import { STATUS_PALETTE } from '../../utils/style-palettes';
 
 interface StatusBadgeProps {
@@ -27,8 +30,10 @@ const STATUS_ICONS: Record<ProjectStatus, ComponentType<SVGProps<SVGSVGElement>>
 };
 
 export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
+  const t = useT();
   const palette = STATUS_PALETTE[status];
   const Icon = STATUS_ICONS[status];
+  const label = t.enums.projectStatus[status];
   const sizing =
     size === 'md'
       ? 'px-3 py-1.5 text-xs gap-1.5'
@@ -37,10 +42,10 @@ export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
   return (
     <span
       className={`inline-flex items-center rounded-full border font-semibold tracking-wide uppercase ${palette.container} ${sizing}`}
-      title={PROJECT_STATUS_LABELS[status]}
+      title={label}
     >
       <Icon className={`${iconSize} ${palette.iconColor}`} aria-hidden />
-      {PROJECT_STATUS_LABELS[status]}
+      {label}
     </span>
   );
 }

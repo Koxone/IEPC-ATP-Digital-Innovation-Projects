@@ -1,4 +1,7 @@
+'use client';
+
 import { ArrowUpRight, CalendarClock, ExternalLink, User2 } from 'lucide-react';
+import { useI18n } from '../../i18n/I18nProvider';
 import type { InnovationProject } from '../../types/portfolio-types';
 import { formatDate, relativeDateLabel } from '../../utils/date-utils';
 import { formatImpactValue, formatUsd, sumAnnualUsdImpact } from '../../utils/impact-utils';
@@ -15,12 +18,13 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps) {
+  const { locale, t } = useI18n();
   const annualUsd = sumAnnualUsdImpact(project.impact);
   const headlineImpact =
     annualUsd > 0
-      ? { label: 'Annual impact', value: formatUsd(annualUsd) }
+      ? { label: t.card.annualImpact, value: formatUsd(annualUsd) }
       : project.impact[0]
-        ? { label: project.impact[0].label, value: formatImpactValue(project.impact[0]) }
+        ? { label: project.impact[0].label, value: formatImpactValue(project.impact[0], t) }
         : null;
   const deploymentLink = project.links.find((l) => l.url && l.url !== '#');
 
@@ -29,7 +33,7 @@ export function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps)
       type="button"
       onClick={() => onSelect(project.id)}
       aria-pressed={isSelected}
-      className={`group surface-card flex flex-col gap-4 p-5 text-left transition hover:border-ford-border-strong ${
+      className={`group surface-card flex cursor-pointer flex-col gap-4 p-5 text-left transition hover:border-ford-border-strong ${
         isSelected ? 'ring-2 ring-ford-accent/50' : ''
       }`}
     >
@@ -42,7 +46,10 @@ export function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps)
             {project.name}
           </h3>
         </div>
-        <ArrowUpRight className="h-4 w-4 shrink-0 text-ford-text-dim transition group-hover:text-ford-accent" aria-hidden />
+        <ArrowUpRight
+          className="h-4 w-4 shrink-0 text-ford-text-dim transition group-hover:text-ford-accent"
+          aria-hidden
+        />
       </div>
 
       <p className="line-clamp-2 text-xs text-ford-text-muted sm:text-sm">{project.description}</p>
@@ -69,7 +76,7 @@ export function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps)
           {deploymentLink ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-ford-border bg-ford-surface px-2 py-0.5 text-[10px] font-semibold tracking-wider text-ford-text-muted uppercase">
               <ExternalLink className="h-2.5 w-2.5" aria-hidden />
-              live
+              {t.card.liveBadge}
             </span>
           ) : null}
         </div>
@@ -82,7 +89,8 @@ export function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps)
         </span>
         <span className="inline-flex items-center gap-1.5">
           <CalendarClock className="h-3 w-3" aria-hidden />
-          Updated {formatDate(project.lastUpdateDate)} · {relativeDateLabel(project.lastUpdateDate)}
+          {t.card.updatedPrefix} {formatDate(project.lastUpdateDate, locale)} ·{' '}
+          {relativeDateLabel(project.lastUpdateDate, t, locale)}
         </span>
       </div>
     </button>

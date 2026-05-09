@@ -4,8 +4,9 @@ import { Briefcase } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PROJECTS } from '../data/projects';
 import { ProjectStatus } from '../enums/portfolio-enums';
-import { FiltersBar, type PortfolioFilters } from './filters/FiltersBar';
+import { I18nProvider, useT } from '../i18n/I18nProvider';
 import { CategoryDistribution } from './filters/CategoryDistribution';
+import { FiltersBar, type PortfolioFilters } from './filters/FiltersBar';
 import { HeroSection } from './layout/HeroSection';
 import { PortalFooter } from './layout/PortalFooter';
 import { PortalHeader } from './layout/PortalHeader';
@@ -22,6 +23,15 @@ const INITIAL_FILTERS: PortfolioFilters = {
 };
 
 export function PortalShell() {
+  return (
+    <I18nProvider>
+      <PortalShellInner />
+    </I18nProvider>
+  );
+}
+
+function PortalShellInner() {
+  const t = useT();
   const [filters, setFilters] = useState<PortfolioFilters>(INITIAL_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -75,11 +85,7 @@ export function PortalShell() {
         </div>
 
         <section className="flex flex-col gap-4">
-          <SectionTitle
-            icon={Briefcase}
-            title="Initiatives"
-            hint="Click any card to open its full executive view."
-          />
+          <SectionTitle icon={Briefcase} title={t.initiatives.title} hint={t.initiatives.hint} />
           <ProjectGrid
             projects={filteredProjects}
             selectedId={selectedId}

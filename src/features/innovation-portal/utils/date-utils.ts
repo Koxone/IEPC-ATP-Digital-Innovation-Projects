@@ -1,30 +1,40 @@
+import type { Dictionary } from '../i18n/dictionary';
+import { DEFAULT_LOCALE, LOCALE_BCP47, Locale } from '../i18n/locale';
+
 /**
- * Date helpers used across the portfolio portal. Kept dependency-free and
- * timezone-tolerant — the data file uses ISO strings (`2026-04-15`).
+ * Date helpers used across the portfolio portal. Locale-aware via
+ * `Intl.DateTimeFormat` and the active dictionary for relative labels.
  */
-
-const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-});
-
-const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  year: 'numeric',
-});
 
 const parse = (value: string): Date => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? new Date() : date;
 };
 
-export function formatDate(value: string): string {
-  return DATE_FORMATTER.format(parse(value));
+const formatterCache = new Map<string, Intl.DateTimeFormat>();
+
+function getFormatter(locale: Locale, options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+  const key = `${locale}|${JSON.stringify(options)}`;
+  let formatter = formatterCache.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(LOCALE_BCP47[locale], options);
+    formatterCache.set(key, formatter);
+  }
+  return formatter;
 }
 
-export function formatMonth(value: string): string {
-  return SHORT_DATE_FORMATTER.format(parse(value));
+export function formatDate(value: string, locale: Locale = DEFAULT_LOCALE): string {
+  return getFormatter(locale, { month: 'short', day: 'numeric', year: 'numeric' }).format(
+    parse(value),
+  );
+}
+
+export function formatMonth(value: string, locale: Locale = DEFAULT_LOCALE): string {
+  return getFormatter(locale, { month: 'short', year: 'numeric' }).format(parse(value));
+}
+
+export function formatLongMonth(value: string, locale: Locale = DEFAULT_LOCALE): string {
+  return getFormatter(locale, { month: 'long', year: 'numeric' }).format(parse(value));
 }
 
 export function getDaysUntilDate(value: string): number {
@@ -39,14 +49,23 @@ export function getDaysUntilDate(value: string): number {
   return Math.round((startOfTarget - startOfNow) / (1000 * 60 * 60 * 24));
 }
 
-export function relativeDateLabel(value: string): string {
+/**
+ * Returns a localized relative-time label such as "Today", "In 3 days"
+ * or "2 weeks ago", falling back to the formatted month for distant
+ * dates so the UI never reads "in 320 days".
+ */
+export function relativeDateLabel(
+  value: string,
+  t: Dictionary,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
   const days = getDaysUntilDate(value);
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Tomorrow';
-  if (days === -1) return 'Yesterday';
-  if (days > 0 && days <= 14) return `In ${days} days`;
-  if (days < 0 && days >= -14) return `${Math.abs(days)} days ago`;
-  if (days > 0 && days <= 60) return `In ${Math.round(days / 7)} weeks`;
-  if (days < 0 && days >= -60) return `${Math.round(Math.abs(days) / 7)} weeks ago`;
-  return formatMonth(value);
+  if (days === 0) return t.dates.today;
+  if (days === 1) return t.dates.tomorrow;
+  if (days === -1) return t.dates.yesterday;
+  if (days > 0 && days <= 14) return t.dates.inDays(days);
+  if (days < 0 && days >= -14) return t.dates.daysAgo(Math.abs(days));
+  if (days > 0 && days <= 60) return t.dates.inWeeks(Math.round(days / 7));
+  if (days < 0 && days >= -60) return t.dates.weeksAgo(Math.round(Math.abs(days) / 7));
+  return formatMonth(value, locale);
 }

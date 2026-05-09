@@ -1,23 +1,25 @@
 import { ImpactUnit } from '../enums/portfolio-enums';
+import type { Dictionary } from '../i18n/dictionary';
 import type { ImpactMetric } from '../types/portfolio-types';
 
 /**
  * Render an impact metric value with its appropriate symbol and short
- * suffix. Uses K/M abbreviations for currency to keep cards compact.
+ * suffix. Suffixes are pulled from the dictionary so the same metric
+ * reads "$240K / yr" or "$240K / año" depending on the active locale.
  */
-export function formatImpactValue(metric: ImpactMetric): string {
+export function formatImpactValue(metric: ImpactMetric, t: Dictionary): string {
   const value = metric.value;
   switch (metric.unit) {
     case ImpactUnit.USD_PER_YEAR:
-      return `$${formatCompactNumber(value)} / yr`;
+      return `$${formatCompactNumber(value)} ${t.impact.perYearSuffix}`;
     case ImpactUnit.HOURS_PER_MONTH:
-      return `${formatCompactNumber(value)} hrs / mo`;
+      return `${formatCompactNumber(value)} ${t.impact.perMonthHoursSuffix}`;
     case ImpactUnit.USERS:
-      return `${formatCompactNumber(value)} users`;
+      return `${formatCompactNumber(value)} ${t.impact.usersSuffix}`;
     case ImpactUnit.PERCENT:
       return `${value}%`;
     case ImpactUnit.DAYS_REDUCED:
-      return `${formatCompactNumber(value)} days`;
+      return `${formatCompactNumber(value)} ${t.impact.daysSuffix}`;
     case ImpactUnit.COUNT:
       return formatCompactNumber(value);
     default:
@@ -25,19 +27,12 @@ export function formatImpactValue(metric: ImpactMetric): string {
   }
 }
 
-/**
- * Total annual financial impact across the entire portfolio. Skips
- * non-currency metrics so the hero KPI stays meaningful.
- */
 export function sumAnnualUsdImpact(metrics: ImpactMetric[]): number {
   return metrics
     .filter((m) => m.unit === ImpactUnit.USD_PER_YEAR)
     .reduce((sum, m) => sum + m.value, 0);
 }
 
-/**
- * Total recurring time saved per month across the portfolio.
- */
 export function sumMonthlyHoursSaved(metrics: ImpactMetric[]): number {
   return metrics
     .filter((m) => m.unit === ImpactUnit.HOURS_PER_MONTH)
@@ -55,9 +50,7 @@ export function formatCompactNumber(value: number): string {
 }
 
 function trimTrailingZero(value: number): string {
-  return value
-    .toFixed(1)
-    .replace(/\.0$/, '');
+  return value.toFixed(1).replace(/\.0$/, '');
 }
 
 export function formatUsd(value: number): string {

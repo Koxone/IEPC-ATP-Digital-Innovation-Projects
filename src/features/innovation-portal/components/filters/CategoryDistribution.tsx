@@ -1,8 +1,8 @@
+'use client';
+
 import { PieChart } from 'lucide-react';
-import {
-  PROJECT_CATEGORY_LABELS,
-  ProjectCategory,
-} from '../../enums/portfolio-enums';
+import { ProjectCategory } from '../../enums/portfolio-enums';
+import { useT } from '../../i18n/I18nProvider';
 import type { InnovationProject } from '../../types/portfolio-types';
 import { CATEGORY_PALETTE } from '../../utils/style-palettes';
 
@@ -11,6 +11,7 @@ interface CategoryDistributionProps {
 }
 
 export function CategoryDistribution({ projects }: CategoryDistributionProps) {
+  const t = useT();
   const total = projects.length || 1;
   const byCategory = Object.values(ProjectCategory).map((category) => ({
     category,
@@ -21,7 +22,7 @@ export function CategoryDistribution({ projects }: CategoryDistributionProps) {
     <section className="surface-card flex flex-col gap-4 p-5">
       <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-ford-text-dim uppercase">
         <PieChart className="h-3.5 w-3.5 text-ford-accent" aria-hidden />
-        Portfolio mix
+        {t.categoryMix.title}
       </div>
 
       <div className="flex flex-col gap-3">
@@ -32,7 +33,7 @@ export function CategoryDistribution({ projects }: CategoryDistributionProps) {
             <div key={category} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-xs">
                 <span className={`font-semibold ${palette.text}`}>
-                  {PROJECT_CATEGORY_LABELS[category]}
+                  {t.enums.projectCategory[category]}
                 </span>
                 <span className="text-ford-text-dim tabular-nums">
                   <span className="font-semibold text-white">{count}</span> · {percentage}%
