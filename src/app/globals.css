@@ -1,26 +1,191 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ford-header: #0f3a8e;
+  --ford-header-dark: #0a2a6b;
+
+  --ford-bg: #2a3441;
+  --ford-bg-soft: #2f3a48;
+  --ford-sidebar: #1f2937;
+  --ford-sidebar-hover: #2a3441;
+
+  --ford-surface: #26303d;
+  --ford-surface-soft: #2c3949;
+  --ford-surface-strong: #1f2937;
+
+  --ford-border: #3a4554;
+  --ford-border-strong: #4a5564;
+  --ford-border-soft: #333d4c;
+
+  --ford-text: #ffffff;
+  --ford-text-muted: #a7b0bd;
+  --ford-text-dim: #7a8492;
+  --ford-text-faint: #6b7280;
+
+  --ford-accent: #3b82f6;
+  --ford-accent-hover: #2563eb;
+  --ford-accent-soft: #1e40af;
+  --ford-accent-faint: rgba(59, 130, 246, 0.12);
+
+  --ford-success: #10b981;
+  --ford-success-soft: rgba(16, 185, 129, 0.12);
+  --ford-warning: #f59e0b;
+  --ford-warning-soft: rgba(245, 158, 11, 0.12);
+  --ford-danger: #e11d48;
+  --ford-danger-soft: rgba(225, 29, 72, 0.12);
+  --ford-info: #3b82f6;
+  --ford-info-soft: rgba(59, 130, 246, 0.12);
+
+  --background: var(--ford-bg);
+  --foreground: var(--ford-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-ford-header: var(--ford-header);
+  --color-ford-header-dark: var(--ford-header-dark);
+
+  --color-ford-bg: var(--ford-bg);
+  --color-ford-bg-soft: var(--ford-bg-soft);
+  --color-ford-sidebar: var(--ford-sidebar);
+  --color-ford-sidebar-hover: var(--ford-sidebar-hover);
+
+  --color-ford-surface: var(--ford-surface);
+  --color-ford-surface-soft: var(--ford-surface-soft);
+  --color-ford-surface-strong: var(--ford-surface-strong);
+
+  --color-ford-border: var(--ford-border);
+  --color-ford-border-strong: var(--ford-border-strong);
+  --color-ford-border-soft: var(--ford-border-soft);
+
+  --color-ford-text: var(--ford-text);
+  --color-ford-text-muted: var(--ford-text-muted);
+  --color-ford-text-dim: var(--ford-text-dim);
+  --color-ford-text-faint: var(--ford-text-faint);
+
+  --color-ford-accent: var(--ford-accent);
+  --color-ford-accent-hover: var(--ford-accent-hover);
+  --color-ford-accent-soft: var(--ford-accent-soft);
+
+  --color-ford-success: var(--ford-success);
+  --color-ford-warning: var(--ford-warning);
+  --color-ford-danger: var(--ford-danger);
+  --color-ford-info: var(--ford-info);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--ford-bg);
+  min-height: 100vh;
+}
+
+.surface-card {
+  background: var(--ford-surface);
+  border: 1px solid var(--ford-border);
+  border-radius: 6px;
+}
+
+.surface-card-soft {
+  background: var(--ford-surface-soft);
+  border: 1px solid var(--ford-border);
+  border-radius: 6px;
+}
+
+.section-card {
+  background: transparent;
+  border: 1px solid var(--ford-border);
+  border-radius: 6px;
+}
+
+.input-base {
+  background: var(--ford-surface-strong);
+  border: 1px solid var(--ford-border);
+  color: var(--ford-text);
+  border-radius: 4px;
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: var(--ford-accent);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary {
+  background: var(--ford-accent);
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 500;
+  transition:
+    background 120ms ease,
+    transform 120ms ease;
+}
+
+.btn-primary:hover {
+  background: var(--ford-accent-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ford-text-muted);
+  border: 1px solid var(--ford-border);
+  border-radius: 4px;
+  font-weight: 500;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+
+.btn-secondary:hover {
+  background: var(--ford-surface-soft);
+  color: var(--ford-text);
+}
+
+.scrollbar-slim::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.scrollbar-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  background: rgba(167, 176, 189, 0.2);
+  border-radius: 9999px;
+}
+.scrollbar-slim::-webkit-scrollbar-thumb:hover {
+  background: rgba(167, 176, 189, 0.35);
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.health-pulse::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: pulseRing 1.8s ease-out infinite;
 }
